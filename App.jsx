@@ -1,22 +1,43 @@
 import "./global.css";
-import { View, Text, Pressable } from "react-native";
+import { View, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import TodoInput from "./components/TodoInput";
+import TodoList from "./components/TodoList";
+import TodoItem from "./components/TodoItem";
+import { useState } from "react";
 
 export default function App() {
+
+  const [text, settext] = useState("");
+  const [submit, setsubmit] = useState([]); 
+
+  const handlesubmit = () => {
+    if (text.trim().length === 0) return;
+
+    setsubmit([...submit, { text: text, completed: false }]);
+    settext("");
+  };
+
+  const handleDelete = (index) => {
+  setsubmit(submit.filter((_, i) => i !== index));
+};
+
+const toggleComplete = (index) => {
+  setsubmit(
+    submit.map((item, i) =>i === index ? { ...item, completed: !item.completed } : item));
+};
+
+
   return (
-    <View className="flex-1 items-center justify-center bg-black">
-      <Text className="text-3xl font-bold text-blue-400 mb-4">
-        Tailwind Works! 🎉
-      </Text>
+    <SafeAreaView className="flex-1 items-center bg-black">
+      <Text className="text-blue-600 text-5xl mt-5 font-extrabold">TodoZ</Text>
 
-      <View className="w-40 h-40 bg-neutral-500 rounded-2xl items-center justify-center">
-        <Text className="text-white text-lg">Box</Text>
-      </View>
-
-      <Pressable className="mt-6 px-6 py-3 bg-purple-600 rounded-xl active:opacity-70">
-        <Text className="text-white text-base font-semibold">
-          Test Button
-        </Text>
-      </Pressable>
-    </View>
+      <TodoInput 
+        value={text}  
+        input={settext} 
+        onSubmit={handlesubmit} 
+      />
+     <TodoList list={submit} onDelete={handleDelete} onToggle={toggleComplete}/>
+    </SafeAreaView>
   );
 }
